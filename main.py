@@ -14,7 +14,7 @@ print("\nScraping schedules from Licenciatura em Engenharia Informática:")
 classes = course_scraper(driver, "Licenciatura em Engenharia Informática")
 
 print("\nScraping schedules from Mestrado em Engenharia Informática:")
-classes += course_scraper(driver, "Mestrado em Engenharia Informática", first_university_year=4)
+classes += course_scraper(driver, "Mestrado em Engenharia Informática")
 
 with open("shifts.json", "w") as outfile:
     json_dump(classes, outfile, indent=2, ensure_ascii=False)

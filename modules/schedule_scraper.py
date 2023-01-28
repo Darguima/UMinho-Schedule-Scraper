@@ -3,7 +3,9 @@ from selenium.webdriver.common.by import By
 
 from modules.increment_time import increment_time, Time
 
-def schedule_scraper(driver: WebDriver, university_year: int, university_semester: int):
+from json import load as json_load
+
+def schedule_scraper(driver: WebDriver):
   """
   Scrape the UM schedule of a given driver.
   Warning: the schedule need be already on the page.
@@ -12,12 +14,6 @@ def schedule_scraper(driver: WebDriver, university_year: int, university_semeste
   ----------
   driver : WebDriver
     The selenium driver. Need have the schedule ready
-
-  university_year : int
-    The year of the current schedule
-  
-  university_semester : int
-    The semester of the current schedule
 
   Returns
   -------
@@ -42,8 +38,16 @@ def schedule_scraper(driver: WebDriver, university_year: int, university_semeste
   }]
   """
 
+  try:
+    ids_file = open("ids.json", "r")
+    subject_codes = json_load(ids_file)
+    ids_file.close()
+  except FileNotFoundError:
+    print("\n`ids.json` not founded. ")
+    print("Read about 'Subject IDs and Filter Ids' or `ids_scraper` on documentation")
+    exit()
+
   classes = []
-  subject_codes = {}
 
   cell_height = driver.find_element(By.CSS_SELECTOR, '.rsContentTable tr').size["height"]
 
@@ -74,10 +78,7 @@ def schedule_scraper(driver: WebDriver, university_year: int, university_semeste
 
         subject, location, shift = class_info[0].text.split('\n')
 
-        if not subject in subject_codes.keys():
-          subject_codes[subject] = len(subject_codes.keys())
-        
-        subject_code = subject_codes[subject]
+        subject_ids = subject_codes[subject]
 
         duration_in_minutes = ((class_container.size["height"] + 4) / cell_height) * 30
         end_time = increment_time(start_time, duration_in_minutes)
@@ -94,7 +95,7 @@ def schedule_scraper(driver: WebDriver, university_year: int, university_semeste
         end_time_string = f"{end_time['hour']:02}:{end_time['minute']:02}"
 
         classes.append({
-          "id": 0,
+          "id": subject_ids["id"],
 
           "title": subject,
 
@@ -110,7 +111,7 @@ def schedule_scraper(driver: WebDriver, university_year: int, university_semeste
           "start": start_time_string,
           "end": end_time_string,
 
-          "filterId": int(f"{university_year}{university_semester}{subject_code}")
+          "filterId": subject_ids["filterId"]
         })
 
   return classes

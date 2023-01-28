@@ -8,7 +8,7 @@ from json import loads as json_loads
 
 from modules.schedule_scraper import schedule_scraper
 
-def course_scraper(driver: WebDriver,course_name: str, first_university_year: int = 1):
+def course_scraper(driver: WebDriver,course_name: str):
   """
   Scrape schedules of every years and semesters of a course.
   Warning: the driver need be already on the UM schedule page on the correct course.
@@ -22,10 +22,6 @@ def course_scraper(driver: WebDriver,course_name: str, first_university_year: in
     The name of the course to scrape.
     Should be equal to the ones that are on the course picker.
   
-  first_university_year: int
-    In some cases, 1st year is not really the 1st year of university, but 1st year of a new stage.
-    For example, on the masters, the 1st year is the 4th year of university, so should be passed a 4 to this param.
-
   Returns
   -------
   [{
@@ -79,19 +75,18 @@ def course_scraper(driver: WebDriver,course_name: str, first_university_year: in
   for i in range(0, amount_of_years_pickers):
     year_picker = driver.find_elements(By.NAME, "ctl00$ctl40$g_e84a3962_8ce0_47bf_a5c3_d5f9dd3927ef$ctl00$dataAnoCurricular")[i]
 
-    university_year = int(year_picker.get_attribute("value")) + (first_university_year - 1)
+    university_year = int(year_picker.get_attribute("value"))
     year_picker.click()
     
     for semester_num, semesters_date in semesters_dates.items():
       date_input = driver.find_element(By.ID, "ctl00_ctl40_g_e84a3962_8ce0_47bf_a5c3_d5f9dd3927ef_ctl00_dataWeekSelect_dateInput")
       search_button = driver.find_element(By.ID, "ctl00_ctl40_g_e84a3962_8ce0_47bf_a5c3_d5f9dd3927ef_ctl00_btnSearchHorario")
 
-
       print(f"Scraping schedule from {semester_num} semester of year {university_year} of course {course_name}")
 
       date_input.send_keys(semesters_date)
       search_button.click()
 
-      classes += schedule_scraper(driver, university_year, semester_num)
+      classes += schedule_scraper(driver)
     
   return classes

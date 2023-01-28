@@ -42,6 +42,12 @@ The browser chosen to run with Selenium was Firefox, so don't forget to install 
 $ pacman -S firefox
 ```
 
+##### Subject IDs and Filter Ids
+
+[Calendarium](https://calendario.cesium.di.uminho.pt/) use a subject ID and a filterID. On the 1st year all subjects IDs were scraped manually and all subjectIds calculated, so now we just have to scrap them from [shifts.json](https://github.com/cesium/calendarium/blob/96169aac3d6771e3eb27c1f782a204fe85ba682c/data/shifts.json) from that time.
+
+Check if the file `ids.json` exists, if not, read the [ids_scraper documentation](./ids_scraper/README.md) to know how scrape them.
+
 ### Running
 
 Now you can just run and watch. The scrape will be stored at `shifts.json`, with the schedule of the 4 years of `Computer Science Engineering`.
