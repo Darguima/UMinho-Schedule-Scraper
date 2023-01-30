@@ -7,9 +7,9 @@ from selenium.common.exceptions import NoSuchElementException, StaleElementRefer
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.expected_conditions import presence_of_element_located
 
-
 from json import dump as json_dump
 from time import sleep
+from unidecode import unidecode
 
 def subjects_scraper():
     print("Welcome to UMinho Subjects Scraper!")
@@ -22,11 +22,11 @@ def subjects_scraper():
     print("\n\033[1mScraping subjects from Mestrado em Engenharia Informática\033[0m:")
     subjects += scraper(driver, "Mestrado em Engenharia Informática", master=True)
 
-    with open("filters.json", "w") as outfile:
+    with open("subjects.json", "w") as outfile:
         json_dump(subjects, outfile, indent=2, ensure_ascii=False)
 
     print(f"\nDone. Scraped {len(subjects)} subjects from the UMinho page!")
-    print(f"Check them at filters.json\n")
+    print(f"Check them at subjects.json\n")
 
     driver.close()
 
@@ -52,7 +52,8 @@ def scraper(driver: WebDriver, course_name: str, master: bool = False):
         "id": int, # filterId
         "subjectId": int, 
         "name": string,
-        "groupId": int,
+        "short_name": string,
+        "year": int,
         "semester": int
     }]
     """
@@ -109,10 +110,11 @@ def scraper(driver: WebDriver, course_name: str, master: bool = False):
                 # Opção UMinho / de mestrado
                 continue
             
-            if subjects != [] and (subjects[-1]["semester"] != semester_counter or subjects[-1]["groupId"] != year_counter):
+            if subjects != [] and (subjects[-1]["semester"] != semester_counter or subjects[-1]["year"] != year_counter):
                 filter_id_counter = 1
             
             subject_name = subject_info[1].text
+            short_name = "".join([unidecode(word[0]) for word in subject_name.split(" ") if word[0].isupper()])
             
             # Getting subjectId ===
             more_info_button = get_future_element_with_timeout(subject_info[1], "a", exit_on_timeout=False)
@@ -140,7 +142,8 @@ def scraper(driver: WebDriver, course_name: str, master: bool = False):
                 "id": int(f"{year_counter}{semester_counter}{filter_id_counter}"), # filterId
                 "subjectId": int(subject_id),
                 "name": subject_name,
-                "groupId": year_counter,
+                "short_name": short_name,
+                "year": year_counter,
                 "semester": semester_counter
             })
 
