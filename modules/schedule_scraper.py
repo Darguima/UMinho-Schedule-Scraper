@@ -2,7 +2,6 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
 from modules.increment_time import increment_time, Time
-
 from json import load as json_load
 
 def schedule_scraper(driver: WebDriver):
@@ -39,12 +38,19 @@ def schedule_scraper(driver: WebDriver):
   """
 
   try:
-    ids_file = open("ids.json", "r")
-    subject_codes = json_load(ids_file)
-    ids_file.close()
+    filters_file = open("filters.json", "r")
+
+    subject_codes = {}
+    for subject in json_load(filters_file):
+      subject_codes[subject["name"].lower()] = {
+        "id": subject["subjectId"],
+        "filterId": subject["id"]
+      }
+    
+    filters_file.close()
   except FileNotFoundError:
-    print("\n`ids.json` not founded. ")
-    print("Read about 'Subject IDs and Filter Ids' or `ids_scraper` on documentation")
+    print("\n`filters.json` not founded. ")
+    print("Read about 'Subject IDs and Filter Ids' or `subjects_scraper` on documentation")
     exit()
 
   classes = []
@@ -78,12 +84,19 @@ def schedule_scraper(driver: WebDriver):
 
         subject, location, shift = class_info[0].text.split('\n')
 
-        subject_ids = subject_codes[subject]
-
+        if subject.lower() in subject_codes.keys():
+          subject_ids = subject_codes[subject.lower()]
+        else:
+          print(f"\t\033[93m\033[1mWARNING:\033[0m {subject} isn't present on filter.json. Using default values")
+          subject_ids = {
+            "id": 0,
+            "filterId": 0
+          }
+        
         duration_in_minutes = ((class_container.size["height"] + 4) / cell_height) * 30
         end_time = increment_time(start_time, duration_in_minutes)
 
-        shift_type = "".join([c for c in shift if c.isalpha()])
+        shift_type = "".join([char for char in shift if char.isalpha()])
 
         _, build, room = location.removeprefix("[").removesuffix("]").split(" - ")
         build_number = build.split(' ')[1]

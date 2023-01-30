@@ -44,9 +44,9 @@ $ pacman -S firefox
 
 ##### Subject IDs and Filter Ids
 
-[Calendarium](https://calendario.cesium.di.uminho.pt/) use a subject ID and a filterID. On the 1st year all subjects IDs were scraped manually and all subjectIds calculated, so now we just have to scrap them from [shifts.json](https://github.com/cesium/calendarium/blob/96169aac3d6771e3eb27c1f782a204fe85ba682c/data/shifts.json) from that time.
+[Calendarium](https://calendario.cesium.di.uminho.pt/) use a subject ID and a filterID. On UMinho Courses pages, a list of all subjects, ordered first by year/semesters and next by alphabetic order, and the subject IDs are given. This is everything we need to complete `shifts.json` and generate a basic `filters.json` to Calendarium.
 
-Check if the file `ids.json` exists, if not, read the [ids_scraper documentation](./ids_scraper/README.md) to know how scrape them.
+Check if the file `filters.json` exists, if not, read the [subjects_scraper documentation](./subjects_scraper/README.md) to know how scrape them.
 
 ### Running
 
