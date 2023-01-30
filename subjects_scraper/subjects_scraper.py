@@ -3,9 +3,13 @@
 from selenium import webdriver
 from selenium.webdriver.remote.webdriver import WebDriver, WebElement
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.expected_conditions import presence_of_element_located
+
 
 from json import dump as json_dump
-from time import sleep, time
+from time import sleep
 
 def subjects_scraper():
     print("Welcome to UMinho Subjects Scraper!")
@@ -181,23 +185,20 @@ def get_future_element_with_timeout(driver: WebDriver | WebElement, css_query: s
     WebElement | None | exit()
     """
 
-    initial_time = time()
-    element = None
+    ignored_exceptions=(NoSuchElementException,StaleElementReferenceException)
+    try:
+        element = WebDriverWait(driver, timeout, ignored_exceptions=ignored_exceptions)\
+                    .until(presence_of_element_located((By.CSS_SELECTOR, css_query)))
+        
+    except TimeoutException:
+        if exit_on_timeout:
+            print(f"Future Element '{css_query}' did not appear after {timeout} seconds.")
+            print("Exiting ...")
+            exit()
+        else:
+            return None
 
-    while element == None:
-        if time() - initial_time >= timeout:
-            if exit_on_timeout:
-                print(f"Future Element '{css_query}' did not appear after {timeout} seconds.")
-                print("Exiting ...")
-                exit()
-            else:
-                return None
+    return element
 
-        try:
-            element = driver.find_element(By.CSS_SELECTOR, css_query)
-        except:
-            continue
-
-    return driver.find_element(By.CSS_SELECTOR, css_query)
 
 subjects_scraper()
