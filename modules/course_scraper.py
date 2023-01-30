@@ -8,7 +8,7 @@ from json import loads as json_loads
 
 from modules.schedule_scraper import schedule_scraper
 
-def course_scraper(driver: WebDriver,course_name: str):
+def course_scraper(driver: WebDriver,course_name: str, subject_codes: list[dict[str, int]]):
   """
   Scrape schedules of every years and semesters of a course.
   Warning: the driver need be already on the UM schedule page on the correct course.
@@ -21,6 +21,14 @@ def course_scraper(driver: WebDriver,course_name: str):
   course_name : str
     The name of the course to scrape.
     Should be equal to the ones that are on the course picker.
+
+  subject_codes : list[dict[str, int]]
+    Every subject has its subject ID and filter ID. This IDs are stored on a list of dicts with the format:
+
+    [{
+      "id": int,
+      "filterId": int
+    }]
   
   Returns
   -------
@@ -87,6 +95,6 @@ def course_scraper(driver: WebDriver,course_name: str):
       date_input.send_keys(semesters_date)
       search_button.click()
 
-      classes += schedule_scraper(driver)
+      classes += schedule_scraper(driver, subject_codes)
     
   return classes

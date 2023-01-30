@@ -2,9 +2,8 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
 from modules.increment_time import increment_time, Time
-from json import load as json_load
 
-def schedule_scraper(driver: WebDriver):
+def schedule_scraper(driver: WebDriver, subject_codes: list[dict[str, int]]):
   """
   Scrape the UM schedule of a given driver.
   Warning: the schedule need be already on the page.
@@ -13,6 +12,14 @@ def schedule_scraper(driver: WebDriver):
   ----------
   driver : WebDriver
     The selenium driver. Need have the schedule ready
+
+  subject_codes : list[dict[str, int]]
+    Every subject has its subject ID and filter ID. This IDs are stored on a list of dicts with the format:
+
+    [{
+      "id": int,
+      "filterId": int
+    }]
 
   Returns
   -------
@@ -36,22 +43,6 @@ def schedule_scraper(driver: WebDriver):
     "filterId": int
   }]
   """
-
-  try:
-    filters_file = open("filters.json", "r")
-
-    subject_codes = {}
-    for subject in json_load(filters_file):
-      subject_codes[subject["name"].lower()] = {
-        "id": subject["subjectId"],
-        "filterId": subject["id"]
-      }
-    
-    filters_file.close()
-  except FileNotFoundError:
-    print("\n`filters.json` not founded. ")
-    print("Read about 'Subject IDs and Filter Ids' or `subjects_scraper` on documentation")
-    exit()
 
   classes = []
 

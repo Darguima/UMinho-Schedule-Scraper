@@ -200,5 +200,5 @@ def get_future_element_with_timeout(driver: WebDriver | WebElement, css_query: s
 
     return element
 
-
-subjects_scraper()
+if __name__ == '__main__':
+    subjects_scraper()
