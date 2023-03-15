@@ -1,5 +1,13 @@
 # UMinho Schedule Scraper 
 
+---
+#### ⚠️ Project Archived 🗃️
+
+
+This project was merged with [Calendarium](https://github.com/cesium/calendarium). You can find the PR [here](https://github.com/cesium/calendarium/pull/90), and the scraper code on [this folder](https://github.com/cesium/calendarium/tree/master/scraper).
+
+---
+
 Python script to scrape the University of Minho schedules pages to a JSON file to use on [Calendarium](https://calendario.cesium.di.uminho.pt/) of [CeSIUM](https://github.com/cesium).
 
 ## Running
